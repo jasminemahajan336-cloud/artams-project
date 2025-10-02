@@ -1,86 +1,46 @@
-# ARTAMS - Advanced Real Time Attendance Management System
+# ARTAMS - CLI Implementation (Milestone 1)
 
-Welcome to the official repository for the ARTAMS project by **Team Astra**. This system is designed to be a secure, efficient, and proxy-proof attendance solution, with its core logic built in C for maximum performance and learning.
+This repository contains the core logic for the ARTAMS project, implemented as a standalone Command-Line Interface (CLI). This serves as our proof-of-concept for all backend functionality.
 
-## 🎯 Project Goal
+## 🏗 Project Structure
 
-Our primary objective is to eliminate proxy attendance by using a multi-layered security approach:
-1.  **Dynamic Tokens:** Simulating dynamic QR codes that expire to prevent sharing.
-2.  **Location Validation:** Ensuring students are physically present in the classroom.
-3.  **Efficient Backend:** Using core Data Structures and Algorithms in C for a high-performance engine.
-
----
-
-## 💻 Tech Stack
-
-- **Core Logic:** C
-- **Middleware:** FastCGI
-- **Database:** Firebase (for Milestone 2)
-- **Frontend:** HTML, CSS, JavaScript (for Milestone 2)
+- **/core**: Contains all core logic modules, separated into `.c` and `.h` files.
+- **/cli**: The user-facing CLI entry point (`main.c`).
+- **/data**: Flat-file database for the CLI demo.
+  - `students.txt`: Pre-populated list of students.
+  - `sessions.txt`: Stores the active session token and its expiry.
+  - `attendance_log.txt`: A log of all successful attendance markings.
+- **Makefile**: Automates the compilation process.
 
 ---
 
-## 📁 File Structure & Workflow
+## 🚀 How to Build and Run
 
-This repository is organized into modules. Here's how they work together:
+### 1. Build the Executable
 
-- **/core**: Contains the heart of our system. All data structures and validation logic reside here.
-  - `student_db.c`: Manages all student data using a Hash Table.
-  - `token_manager.c`: Generates and validates secure, time-sensitive session tokens.
-  - `location_validator.c`: Verifies student-provided GPS coordinates.
-  - `attendance_log.c`: Handles the in-memory log of attendance records for the CLI demo.
-- **/cli**: The command-line interface for testing and demonstrating our core logic.
-  - `main.c`: The entry point for our Milestone 1 demo. It integrates all `core` modules to create a functional CLI application.
-- **/fastcgi**: This will house our C-based web server for Milestone 2.
-  - `server.c`: Listens for HTTP requests and calls the core logic functions.
-- **/index.html**: The user-facing web interface for Milestone 2.
-
----
-
-## 🚀 Milestone 1: How to Build and Run the CLI
-
-### Step 1: Compile the Project
-
-Navigate to the project's root directory (`artams-project/`) and run the following command to compile all the necessary C files into a single executable named `artams_cli`.
+Navigate to the `artams-cli` root directory and run the `make` command. This will compile all source files and create an executable named `artams_cli`.
 
 ```bash
-gcc cli/main.c core/*.c -o artams_cli -lm
+make
 ```
-*(Note: The `-lm` flag is included to link the math library, which will be needed for the Haversine formula in `location_validator.c`)*
 
-### Step 2: Run the CLI Demo
+### 2. Run the Demo
 
-After successful compilation, an executable file `artams_cli` will be created. Follow this two-terminal workflow to run the demo:
+Use the two-terminal approach to simulate the teacher-student interaction:
 
-1.  **Open Two Terminals:** Place them side-by-side. One will be the **Teacher's Terminal**, and the other will be the **Student's Terminal**.
+- **Terminal 1 (Teacher):** `./artams_cli`
+- **Terminal 2 (Student):** `./artams_cli`
 
-2.  **Run in Both Terminals:** In both terminals, execute the program:
-    ```bash
-    ./artams_cli
-    ```
+**Teacher Workflow:**
+1.  Select Teacher Mode.
+2.  Choose "Start Attendance Session".
+3.  A token will be generated and saved to `data/sessions.txt`. The token is displayed on screen.
 
-3.  **Teacher Actions (Terminal 1):**
-    - The CLI will show a menu. Select the "Teacher" role.
-    - Choose the option to "Start New Session".
-    - The application will generate and display a **secure token** (e.g., `a1b2-c3d4-e5f6`). This simulates the dynamic QR code.
+**Student Workflow:**
+1.  Select Student Mode.
+2.  Enter your Roll Number (must exist in `data/students.txt`).
+3.  Enter the token displayed on the teacher's screen.
+4.  Enter mock GPS coordinates.
+5.  The system validates all inputs and, if successful, appends a record to `data/attendance_log.txt`.
 
-4.  **Student Actions (Terminal 2):**
-    - In the other terminal, select the "Student" role.
-    - Choose "Mark Attendance".
-    - The app will prompt you to enter:
-      - Your Student ID.
-      - The **token** displayed on the Teacher's screen.
-      - Your mock GPS coordinates (e.g., `28.7041,77.1025`).
-
-5.  **View Results:**
-    - The Student's terminal will immediately show whether the attendance was marked successfully after validating the token and location.
-    - The Teacher's terminal can now select "View Attendance Log" to see a real-time list of all students who have been successfully marked.
-
----
-
-## 👨‍👩‍👧‍👦 Team Astra - Milestone 1 Roles
-
-- **Pawan Joshi (Lead):** `token_manager.c` & `cli/main.c` integration.
-- **Anushka:** `student_db.c` & CLI menu/input logic.
-- **Jasmine:** `attendance_log.c` & session data structures.
-- **Aaditya Uniyal:** `location_validator.c` & GPS input flow.
+The teacher can then use "View Attendance Log" to see the contents of `attendance_log.txt`.
