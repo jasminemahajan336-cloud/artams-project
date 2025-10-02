@@ -1,14 +1,16 @@
 #ifndef STUDENT_DB_H
 #define STUDENT_DB_H
-
-typedef struct Student {
-    int rollNo;
-    char name[50];
-} Student;
-
-void initHashTable();
-void addStudent(int rollNo, char* name);
-Student* searchStudent(int rollNo);
-void displayStudents();
-
+#define TABLE_SIZE 100
+typedef struct student {
+int rollno;
+int name[50];
+struct student *next;   //this is i have made to avoid collision 
+}Student ;
+//functions
+void inithashtable();
+unsigned int hashfucntion(int rollno);
+void addstudent(int rolllno,const char* name);
+student* searchstudent(int rollno);
+void displaystudents();
 #endif
+
