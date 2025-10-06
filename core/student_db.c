@@ -2,78 +2,52 @@
 #include <stdlib.h>
 #include <string.h>
 #include "student_db.h"
-
-Student* hashTable[TABLE_SIZE];
-
-void initHashTable() {
-    for(int i = 0; i < TABLE_SIZE; i++)
-        hashTable[i] = NULL;
+Student* hashtable[TABLE_SIZE];
+unsigned int hashfunction(int rollno) {
+    return rollno % TABLE_SIZE;
 }
-
-unsigned int hashFunction(int rollNo) {
-    return rollNo % TABLE_SIZE;
+void inithashtable(){
+    for(int i=0;i<TABLE_SIZE;i++){
+        hashtable[i]=NULL;
+    }
 }
-
-void addStudent(int rollNo, const char* name) {
-    unsigned int index = hashFunction(rollNo);
-
-    // Create new node
-    Student* newStudent = (Student*)malloc(sizeof(Student));
-    newStudent->rollNo = rollNo;
-    strncpy(newStudent->name, name, 50);
-    newStudent->name[49] = '\0';
-    newStudent->next = hashTable[index];
-    hashTable[index] = newStudent;
-}
-
-Student* searchStudent(int rollNo) {
-    unsigned int index = hashFunction(rollNo);
-    Student* current = hashTable[index];
-
-    while(current != NULL) {
-        if(current->rollNo == rollNo)
-            return current;
-        current = current->next;
+static void addstudent(int rollno,const char* name){  //adding student(internally in hashtable)
+    unsigned int index=hashfunction(rollno);
+    Student* newstudent=(Student*)malloc(sizeof(Student));
+    newstudent->rollno=rollno;
+    strncpy(newstudent->name, name, 50);
+    newstudent->name[49]='\0';
+    newstudent->next=hashtable[index];
+    hashtable[index]=newstudent;
+    }
+Student* searchstudent(int rollno){
+    unsigned int index=hashfunction(rollno);
+    Student* current=hashtable[index];
+    while(current){
+        if (current->rollno==rollno) return current;
+        current=current->next;
     }
     return NULL;
 }
-
-void displayStudents() {
-    printf("\n===== ALL STUDENTS =====\n");
-    for(int i = 0; i < TABLE_SIZE; i++) {
-        Student* current = hashTable[i];
-        while(current != NULL) {
-            printf("Roll: %d, Name: %s\n", current->rollNo, current->name);
-            current = current->next;
+void displaystudents() {
+    printf("\n---ALL STUDENTS---\n");
+    for (int i=0;i<TABLE_SIZE;i++) {
+        Student* current=hashtable[i];
+        while (current) {
+            printf("Roll:%d, Name:%s\n",current->rollno,current->name);
+            current=current->next;
         }
     }
 }
-
-// Load from file into hash table
-void loadStudentsFromFile(const char* filename) {
-    FILE* file = fopen(filename, "r");
-    if(file == NULL) {
-        printf("No student file found, starting fresh.\n");
+void loadstudents(const char* filename){
+    FILE* file=fopen(filename,"r");
+    if(!file){
+        printf(" No students file found.\n");
         return;
     }
-
-    int rollNo;
+    int rollno;
     char name[50];
-    while(fscanf(file, "%d %[^\n]", &rollNo, name) == 2) {
-        addStudent(rollNo, name);
+    while(fscanf(file,"%d,%49[^\n]\n",&rollno,name)==2) {
+        addstudent(rollno,name);
     }
-
-    fclose(file);
-}
-
-// Append new student to file
-void saveStudentToFile(const char* filename, int rollNo, const char* name) {
-    FILE* file = fopen(filename, "a");
-    if(file == NULL) {
-        printf("Error opening file for writing.\n");
-        return;
-    }
-
-    fprintf(file, "%d %s\n", rollNo, name);
-    fclose(file);
-}
+    fclose(file);}
