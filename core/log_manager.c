@@ -106,6 +106,7 @@ void show_attendance(struct attendancerecord*head)
 {
     struct attendancerecord *itr=head;
     if (itr == NULL)
+    
     {
         printf("No attendancer records found.\n");
         return;
