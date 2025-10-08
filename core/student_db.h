@@ -6,9 +6,9 @@ typedef struct Student {
     char name[50];
     struct Student* next;
 } Student;
-void inithashtable();
+void inithashTable();
 void loadstudents(const char* filename);
-Student* searchstudent(int rollNo);
+Student* searchStudent(int rollNo);
 void displaystudents();
 #endif
 

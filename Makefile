@@ -2,7 +2,7 @@
 
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99
+CFLAGS = -Wall -Wextra -std=c99 -I./core
 LDFLAGS = -lm
 
 # Source directories
@@ -34,6 +34,11 @@ $(TARGET): $(OBJS)
 # Clean up build files
 clean:
 	rm -f $(OBJS) $(TARGET)
+	rm -f core/*.o cli/*.o
+
+# Run the program
+run: $(TARGET)
+	./$(TARGET)
 
 # Phony targets
-.PHONY: all clean
+.PHONY: all clean run

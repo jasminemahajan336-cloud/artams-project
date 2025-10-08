@@ -1,0 +1,2 @@
+# Attendance Log
+# Format: Roll: <roll_no>, Name: <name>, Time: <timestamp>, Location: (<lat>, <lon>), Status: <status>

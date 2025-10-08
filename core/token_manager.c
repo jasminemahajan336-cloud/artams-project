@@ -1,0 +1,152 @@
+#include "token_manager.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+void generateToken(char* token) {
+    const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    int length = TOKEN_LENGTH;
+    
+    srand((unsigned int)time(NULL));
+    
+    for (int i = 0; i < length; i++) {
+        token[i] = charset[rand() % (sizeof(charset) - 1)];
+    }
+    token[length] = '\0';
+}
+
+void saveToken(const char* filename, const char* token, int validity_seconds) {
+    FILE* file = fopen(filename, "w");
+    if (!file) {
+        printf("Error: Could not save token to %s\n", filename);
+        return;
+    }
+    
+    time_t current_time = time(NULL);
+    time_t expiry_time = current_time + validity_seconds;
+    
+    fprintf(file, "%s %ld\n", token, expiry_time);
+    fclose(file);
+}
+int validateToken(const char* filename, const char* token) {
+    FILE* file = fopen(filename, "r");
+    if (!file) {
+        return 0;
+    }
+    
+    char stored_token[16];
+    time_t expiry_time;
+    
+    if (fscanf(file, "%15s %ld", stored_token, &expiry_time) != 2) {
+        fclose(file);
+        return 0;
+    }
+    fclose(file);
+    
+    time_t current_time = time(NULL);
+    
+    if (strcmp(token, stored_token) == 0 && current_time <= expiry_time) {
+        return 1;
+    }
+    
+    return 0;
+}
+
+int getTokenStatus(const char* filename) {
+    FILE* file = fopen(filename, "r");
+    if (!file) {
+        return 0;  // No token exists
+    }
+    
+    char token[16];
+    time_t expiry_time;
+    
+    if (fscanf(file, "%15s %ld", token, &expiry_time) != 2) {
+        fclose(file);
+        return -1;  // Invalid token format
+    }
+    fclose(file);
+    
+    time_t current_time = time(NULL);
+    
+    if (current_time > expiry_time) {
+        return 2;  // Token expired
+    }
+    
+    return 1;  // Token is valid
+}
+
+void checkTokenExpiry(const char* filename) {
+    int status = getTokenStatus(filename);
+    
+    switch (status) {
+        case 0:
+            printf("[INFO] No token exists\n");
+            break;
+        case 1: {
+            FILE* file = fopen(filename, "r");
+            char token[16];
+            time_t expiry_time;
+            
+            fscanf(file, "%15s %ld", token, &expiry_time);
+            fclose(file);
+            
+            time_t current_time = time(NULL);
+            int remaining = (int)(expiry_time - current_time);
+            
+            printf("[INFO] Token %s is valid for %d more seconds\n", token, remaining);
+            break;
+        }
+        case 2:
+            printf("[INFO] Token has expired\n");
+            break;
+        default:
+            printf("[ERROR] Invalid token file\n");
+    }
+}
+
+void displayTokenInfo(const char* filename) {
+    printf("\n=== Current Token Info ===\n");
+    
+    int status = getTokenStatus(filename);
+    
+    switch (status) {
+        case 0:
+            printf("No active token found\n");
+            break;
+        case 1: {
+            FILE* file = fopen(filename, "r");
+            char token[16];
+            time_t expiry_time;
+            
+            fscanf(file, "%15s %ld", token, &expiry_time);
+            fclose(file);
+            
+            time_t current_time = time(NULL);
+            int remaining = (int)(expiry_time - current_time);
+            
+            printf("Current token: %s\n", token);
+            printf("Valid for: %d seconds\n", remaining);
+            break;
+        }
+        case 2:
+            printf("Token has expired\n");
+            break;
+        default:
+            printf("Invalid token file\n");
+    }
+    printf("========================\n");
+}
+
+void initTokenManager() {
+    printf(" token manager started\n");
+}
+
+void cleanupTokenManager() {
+    printf("Token manager cleaned up\n");
+}
+
+void getTokenAnalytics(const char* filename) {
+    displayTokenInfo(filename);
+}

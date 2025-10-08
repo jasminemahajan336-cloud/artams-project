@@ -32,6 +32,11 @@ void setClassroomLocation(double lat, double lon) {
     class_lon = lon;
 }
 
+void getCurrentClassroomLocation(double* lat, double* lon) {
+    *lat = class_lat;
+    *lon = class_lon;
+}
+
 int validateLocation(double lat, double lon) {
     
     double distance = haversineDistance(class_lat, class_lon, lat, lon);

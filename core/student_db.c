@@ -6,7 +6,7 @@ Student* hashtable[TABLE_SIZE];
 unsigned int hashfunction(int rollno) {
     return rollno % TABLE_SIZE;
 }
-void inithashtable(){
+void inithashTable(){
     for(int i=0;i<TABLE_SIZE;i++){
         hashtable[i]=NULL;
     }
@@ -20,7 +20,8 @@ static void addstudent(int rollno,const char* name){  //adding student(internall
     newstudent->next=hashtable[index];
     hashtable[index]=newstudent;
     }
-Student* searchstudent(int rollno){
+    
+Student* searchStudent(int rollno){
     unsigned int index=hashfunction(rollno);
     Student* current=hashtable[index];
     while(current){

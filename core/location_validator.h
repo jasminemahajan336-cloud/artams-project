@@ -1,8 +1,9 @@
-#ifndef LOG_MANAGER_H
-#define LOG_MANAGER_H
+#ifndef LOCATION_VALIDATOR_H
+#define LOCATION_VALIDATOR_H
 
-void markAttendance(const char* filename, int roll_no, const char* student_name, double lat, double lon, const char* status);
-void showAttendance(const char* filename);
+void setClassroomLocation(double lat, double lon);
+int validateLocation(double lat, double lon);
+void getCurrentClassroomLocation(double* lat, double* lon);
 
 #endif 
 
