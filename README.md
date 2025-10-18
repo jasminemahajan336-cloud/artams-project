@@ -466,7 +466,7 @@ Project Link: [https://github.com/pwnjoshi/artams-project](https://github.com/pw
 
 <div align="center">
 
-**Made with ❤️ by Pawan Joshi**
+**Made with ❤️ by Pawan, Anushka, Jasmine, Aaditya**
 
 ⭐ Star this repo if you find it helpful!
 
@@ -676,4 +676,4 @@ This project is part of the ARTAMS attendance management system development.
 
 **Author**: Pawan Joshi  
 **Version**: 1.0  
-**Last Updated**: October 2024
+**Last Updated**: October 2025
