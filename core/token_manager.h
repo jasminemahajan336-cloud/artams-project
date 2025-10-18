@@ -12,7 +12,6 @@ int validateToken(const char* filename, const char* token);
 
 // Token status functions
 int getTokenStatus(const char* filename);
-void checkTokenExpiry(const char* filename);
 void displayTokenInfo(const char* filename);
 
 // Initialization and cleanup

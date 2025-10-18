@@ -7,7 +7,9 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <conio.h>
-#define SLEEP(x) Sleep(x * 1000)
+
+#define SLEEP(x) Sleep(x * 1000)  // ye aapka displayTokenWithAutoRenewal function me time delay ke liye hai
+
 #define KBHIT() _kbhit()
 #else
 #include <unistd.h>
@@ -18,12 +20,6 @@
 void clearInputBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
-}
-
-void displayWelcomeMessage() {
-    printf("==============================================\n");
-    printf("        ARTAMS - Attendance System           \n");
-    printf("==============================================\n");
 }
 
 int confirmExit() {
@@ -64,24 +60,14 @@ int askRetry(const char* message) {
     return (choice == 'y');
 }
 
-void displayTokenWithTimer(const char* token, int duration) {
-    for (int i = duration; i > 0; i--) {
-        printf("\r[TOKEN] %s (expires in %d seconds) - Press Ctrl+C to stop   ", token, i);
-        fflush(stdout);
-        SLEEP(1);
-    }
-    printf("\r[EXPIRED] Token %s has expired!                              \n", token);
-}
-
 void displayTokenWithAutoRenewal(int duration) {
     char token[16];
     int session_count = 1;
     
-    printf("\n[INFO] Starting auto-renewal token session...\n");
-    printf("[INFO] Press 'q' and Enter to stop the session\n");
-    printf("===============================================\n");
+    printf("Press 'q' and Enter to stop the session\n");
     
     while (1) {
+        
         // Generate new token
         generateToken(token);
         saveToken("data/sessions.txt", token, duration);
@@ -107,7 +93,7 @@ void displayTokenWithAutoRenewal(int duration) {
             SLEEP(1);
         }
         
-        printf("\r[EXPIRED] Token %s has expired! Generating new token...     \n", token);
+        printf("\r Token %s has expired! Generating new token...     \n", token);
         session_count++;
         
         // Small delay before next token

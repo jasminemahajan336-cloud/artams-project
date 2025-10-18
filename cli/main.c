@@ -11,6 +11,38 @@ void teacherMenu();
 void studentMenu();
 void mainMenu();
 
+/**
+ * @brief Main entry point of the ARTAMS (Attendance Management System) application.
+ * 
+ * This function initializes all necessary data structures and enters the main
+ * application loop for user interaction.
+ * 
+ * @return int Returns 0 on successful program termination.
+ * 
+ * Initialization Phase:
+ * 1. inithashTable() - Initializes the hash table data structure for efficient
+ *                      student lookup operations
+ * 2. loadstudents() - Loads student records from "data/students.txt" into the
+ *                     hash table
+ * 3. initAttendanceLog() - Initializes the attendance logging system
+ * 4. loadAttendanceFromFile() - Loads existing attendance records from
+ *                               "data/attendance_log.txt"
+ * 5. initTokenManager() - Initializes the token management system using
+ *                         Min-Heap and Hash Set data structures
+ * 
+ * Main Loop:
+ * - Displays the main menu through mainMenu() and processes user input
+ * - Continues indefinitely until user confirms exit
+ * 
+ * Cleanup Phase (on exit):
+ * 1. confirmExit() - Prompts user to confirm exit decision
+ * 2. saveAttendanceToFile() - Persists current attendance data to
+ *                             "data/attendance_log.txt"
+ * 3. freeAttendanceList() - Deallocates memory used by attendance records
+ * 4. cleanupTokenManager() - Frees resources used by token management system
+ */
+
+
 int main() {
     inithashTable();
     loadstudents("data/students.txt");
@@ -43,39 +75,45 @@ int main() {
     return 0;
 }
 
+// ---------------------------MAIN MENU FUNCTIONS ---------------------------
+
 void mainMenu() {
     int mode;
 
-    printf("\n[MAIN MENU] Select mode:\n (1) Teacher  \n(2) Student  \n(3) Exit: ");
-    fflush(stdout);
+    printf("\n=== Main Menu ===\n");
+
+    printf("\n Select mode:\n"
+        "    (1) Teacher\n"
+        "    (2) Student\n"
+        "    (3) Exit: \n");
     
-    if (scanf("%d", &mode) != 1) {
-        printf("[ERROR] Invalid input!\n");
-        clearInputBuffer();
-        return;
-    }
+    printf("> ");  // ye style ke liye hai prompt ka
+    fflush(stdout); // It is to ensure prompt is displayed before input ( maltab upar wala printf stays in buffer otherwise)
+    
+    scanf("%d", &mode);
 
     if (mode == 1) {
         teacherMenu();
     }
     else if (mode == 2) {
         studentMenu();
-        waitForUserInput();
     }
     else if (mode == 3) {
         return;
     }
     else {
-        printf("[ERROR] Invalid choice! Please select 1, 2, or 3.\n");
+        printf("Invalid choice! Please select 1, 2, or 3.\n");
     }
 }
+
+// ----------------------------TEACHER MENU FUNCTIONS ---------------------------
 
 void teacherMenu() {
     int choice;
     double lat, lon;
 
     while (1) {
-        printf("\n[Teacher Menu]\n");
+        printf("\n----Teacher Menu----\n");
         printf("1. Start Attendance Session\n");
         printf("2. View Attendance Log\n");
         printf("3. View Token Analytics\n");
@@ -93,10 +131,7 @@ void teacherMenu() {
             scanf("%lf", &lon);
 
             setClassroomLocation(lat, lon);
-            printf("[SUCCESS] Classroom location set to (%.6f, %.6f)\n", lat, lon);
-
-            printf("[INFO] Starting auto-renewal session - tokens will regenerate every 32 seconds\n");
-            printf("[INFO] Students must be within 100m of the classroom location\n");
+            printf("Classroom location set to (%.6f, %.6f) successfully\n", lat, lon);
             
             // Start auto-renewal session
             displayTokenWithAutoRenewal(30);
@@ -121,6 +156,10 @@ void teacherMenu() {
         }
     }
 }
+
+
+// ----------------------------STUDENT MENU FUNCTIONS ---------------------------
+
 
 void studentMenu() {
     int rollNo;
