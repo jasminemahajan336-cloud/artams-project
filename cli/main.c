@@ -116,8 +116,7 @@ void teacherMenu() {
         printf("\n----Teacher Menu----\n");
         printf("1. Start Attendance Session\n");
         printf("2. View Attendance Log\n");
-        printf("3. View Token Analytics\n");
-        printf("4. Return to Main Menu\n");
+    printf("3. Return to Main Menu\n");
         printf("> ");
         fflush(stdout);
         scanf("%d", &choice);
@@ -135,24 +134,19 @@ void teacherMenu() {
             
             // Start auto-renewal session
             displayTokenWithAutoRenewal(30);
-            waitForUserInput();
+            waitForUserInput(); // Pause before returning to menu
         }
         else if (choice == 2) {
             printf("\n--- Attendance Log ---\n");
             showAttendance(); // Use linked list display
-            waitForUserInput();
+            waitForUserInput(); // Pause before returning to menu   
         } 
         else if (choice == 3) {
-            getTokenAnalytics("data/sessions.txt");
-            waitForUserInput();
-        }
-
-        else if (choice == 4) {
-            printf("[INFO] Returning to Main Menu...\n");
+            printf("Returning to Main Menu...\n");
             break;
         } 
         else {
-            printf("[ERROR] Invalid choice. Please select 1, 2, 3, or 4.\n");
+            printf("Invalid choice. Please select 1, 2, or 3.\n");
         }
     }
 }

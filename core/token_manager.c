@@ -77,47 +77,10 @@ int getTokenStatus(const char* filename) {
     return 1;  // Token is valid
 }
 
-void displayTokenInfo(const char* filename) {
-    printf("\n=== Current Token Info ===\n");
-    
-    int status = getTokenStatus(filename);
-    
-    switch (status) {
-        case 0:
-            printf("No active token found\n");
-            break;
-        case 1: {
-            FILE* file = fopen(filename, "r");
-            char token[16];
-            time_t expiry_time;
-            
-            fscanf(file, "%15s %ld", token, &expiry_time);
-            fclose(file);
-            
-            time_t current_time = time(NULL);
-            int remaining = (int)(expiry_time - current_time);
-            
-            printf("Current token: %s\n", token);
-            printf("Valid for: %d seconds\n", remaining);
-            break;
-        }
-        case 2:
-            printf("Token has expired\n");
-            break;
-        default:
-            printf("Invalid token file\n");
-    }
-    printf("========================\n");
-}
-
 void initTokenManager() {
     printf(" token manager started\n");
 }
 
 void cleanupTokenManager() {
     printf("Token manager cleaned up\n");
-}
-
-void getTokenAnalytics(const char* filename) {
-    displayTokenInfo(filename);
 }
