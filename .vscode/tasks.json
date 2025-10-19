@@ -20,6 +20,32 @@
 				"$gcc"
 			],
 			"group": "build"
+		},
+		{
+			"label": "Build ARTAMS",
+			"type": "shell",
+			"command": "gcc",
+			"args": [
+				"-Wall",
+				"-Wextra",
+				"-std=c99",
+				"-I./core",
+				"core/*.c",
+				"cli/*.c",
+				"-o",
+				"artams_cli",
+				"-lm"
+			],
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Build ARTAMS",
+			"type": "shell",
+			"command": "gcc -Wall -Wextra -std=c99 -I./core core/*.c cli/*.c -o artams_cli -lm",
+			"group": "build"
 		}
 	]
 }

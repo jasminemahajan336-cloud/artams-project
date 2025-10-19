@@ -47,19 +47,6 @@ void waitForUserInput() {
     getchar();
 }
 
-int askRetry(const char* message) {
-    char choice;
-    printf("\n%s", message);
-    printf("Do you want to retry? (y/n): ");
-    fflush(stdout);
-    
-    clearInputBuffer();
-    scanf("%c", &choice);
-    
-    choice = tolower(choice);
-    return (choice == 'y');
-}
-
 void displayTokenWithAutoRenewal(int duration) {
     char token[16];
     int session_count = 1;

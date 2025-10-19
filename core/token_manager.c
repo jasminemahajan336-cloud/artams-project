@@ -29,6 +29,8 @@ void saveToken(const char* filename, const char* token, int validity_seconds) {
     fprintf(file, "%s %ld\n", token, expiry_time);
     fclose(file);
 }
+
+
 int validateToken(const char* filename, const char* token) {
     FILE* file = fopen(filename, "r");
     if (!file) {
@@ -51,36 +53,4 @@ int validateToken(const char* filename, const char* token) {
     }
     
     return 0;
-}
-
-int getTokenStatus(const char* filename) {
-    FILE* file = fopen(filename, "r");
-    if (!file) {
-        return 0;  // No token exists
-    }
-    
-    char token[16];
-    time_t expiry_time;
-    
-    if (fscanf(file, "%15s %ld", token, &expiry_time) != 2) {
-        fclose(file);
-        return -1;  // Invalid token format
-    }
-    fclose(file);
-    
-    time_t current_time = time(NULL);
-    
-    if (current_time > expiry_time) {
-        return 2;  // Token expired
-    }
-    
-    return 1;  // Token is valid
-}
-
-void initTokenManager() {
-    printf(" token manager started\n");
-}
-
-void cleanupTokenManager() {
-    printf("Token manager cleaned up\n");
 }

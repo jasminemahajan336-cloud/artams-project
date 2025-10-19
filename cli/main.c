@@ -27,8 +27,7 @@ void mainMenu();
  * 3. initAttendanceLog() - Initializes the attendance logging system
  * 4. loadAttendanceFromFile() - Loads existing attendance records from
  *                               "data/attendance_log.txt"
- * 5. initTokenManager() - Initializes the token management system using
- *                         Min-Heap and Hash Set data structures
+ * 5. (removed) Token manager lifecycle hooks
  * 
  * Main Loop:
  * - Displays the main menu through mainMenu() and processes user input
@@ -51,8 +50,8 @@ int main() {
     initAttendanceLog();
     loadAttendanceFromFile("data/attendance_log.txt");
     
-    // Initialize token manager with Min-Heap and Hash Set
-    initTokenManager();
+    // agar Token manager me min heap aur hast set kuch use kiya to initialize karna padega
+    // else Token manager requires no explicit initialization
     
     printf("=== ARTAMS - Attendance Management System ===\n");
 
@@ -66,8 +65,7 @@ int main() {
             saveAttendanceToFile("data/attendance_log.txt");
             freeAttendanceList();
             
-            // Cleanup token manager
-            cleanupTokenManager();
+            // Token manager requires no explicit cleanup
             break;
         }
     }
@@ -116,7 +114,7 @@ void teacherMenu() {
         printf("\n----Teacher Menu----\n");
         printf("1. Start Attendance Session\n");
         printf("2. View Attendance Log\n");
-    printf("3. Return to Main Menu\n");
+        printf("3. Return to Main Menu\n");
         printf("> ");
         fflush(stdout);
         scanf("%d", &choice);
@@ -154,73 +152,86 @@ void teacherMenu() {
 
 // ----------------------------STUDENT MENU FUNCTIONS ---------------------------
 
-
 void studentMenu() {
     int rollNo;
     char token[16];
     double lat, lon;
     double classroom_lat, classroom_lon;
     Student *s;
-    int retry = 1;
 
     printf("\n=== Student Attendance Marking ===\n");
     
     // Get current classroom location for student reference
     getCurrentClassroomLocation(&classroom_lat, &classroom_lon);
-    printf("[INFO] Current classroom location: (%.6f, %.6f)\n", classroom_lat, classroom_lon);
-    printf("[INFO] You must be within 100 meters of this location\n");
-    
+    printf("Current classroom location: (%.6f, %.6f)\n", classroom_lat, classroom_lon);
+    printf("You must be within 100 meters of this location\n");
+
     // Roll number input with retry
-    while (retry) {
+    while (1) {
         printf("\nEnter Roll No: ");
         scanf("%d", &rollNo);
 
         s = searchStudent(rollNo);
         if (!s) {
-            if (askRetry("[ERROR] Student not found in database!\n")) {
+            char choice;
+            printf("Student not found in database!\n");
+            printf("Do you want to try again? (y/n): ");
+            fflush(stdout);
+            clearInputBuffer();
+            scanf(" %c", &choice);
+            if (choice == 'y' || choice == 'Y') {
                 continue;
             } else {
-                printf("[INFO] Returning to main menu...\n");
+                printf("Returning to main menu...\n");
                 return;
             }
         } else {
-            printf("[SUCCESS] Student found: %s\n", s->name);
+            printf("Student found: %s\n", s->name);
             break;
         }
     }
     
     // Token input with retry
-    retry = 1;
-    while (retry) {
+    while (1) {
         printf("Enter Token: ");
         scanf("%s", token);
 
         if (!validateToken("data/sessions.txt", token)) {
-            if (askRetry("[ERROR] Invalid or expired token!\n")) {
+            char choice;
+            printf("Invalid or expired token!\n");
+            printf("Do you want to try again? (y/n): ");
+            fflush(stdout);
+            clearInputBuffer();
+            scanf(" %c", &choice);
+            if (choice == 'y' || choice == 'Y') {
                 continue;
             } else {
-                printf("[INFO] Returning to main menu...\n");
+                printf("Returning to main menu...\n");
                 return;
             }
         } else {
-            printf("[SUCCESS] Token validated successfully!\n");
+            printf("Token validated successfully!\n");
             break;
         }
     }
     
     // Location input with retry
-    retry = 1;
-    while (retry) {
+    while (1) {
         printf("Enter Location (latitude longitude): ");
         printf("\n[Hint: Use coordinates near (%.6f, %.6f) for valid attendance]\n", classroom_lat, classroom_lon);
         printf("Latitude Longitude: ");
         scanf("%lf %lf", &lat, &lon);
 
         if (!validateLocation(lat, lon)) {
+            char choice;
             printf("[ERROR] Location outside classroom range!\n");
             printf("[INFO] Your coordinates: (%.6f, %.6f)\n", lat, lon);
             printf("[INFO] Required coordinates: within 100m of (%.6f, %.6f)\n", classroom_lat, classroom_lon);
-            if (askRetry("")) {
+            printf("Do you want to try again? (y/n): ");
+            fflush(stdout);
+            clearInputBuffer();
+            scanf(" %c", &choice);
+            if (choice == 'y' || choice == 'Y') {
                 continue;
             } else {
                 printf("[INFO] Returning to main menu...\n");
