@@ -11,37 +11,6 @@ void teacherMenu();
 void studentMenu();
 void mainMenu();
 
-/**
- * @brief Main entry point of the ARTAMS (Attendance Management System) application.
- * 
- * This function initializes all necessary data structures and enters the main
- * application loop for user interaction.
- * 
- * @return int Returns 0 on successful program termination.
- * 
- * Initialization Phase:
- * 1. inithashTable() - Initializes the hash table data structure for efficient
- *                      student lookup operations
- * 2. loadstudents() - Loads student records from "data/students.txt" into the
- *                     hash table
- * 3. initAttendanceLog() - Initializes the attendance logging system
- * 4. loadAttendanceFromFile() - Loads existing attendance records from
- *                               "data/attendance_log.txt"
- * 5. (removed) Token manager lifecycle hooks
- * 
- * Main Loop:
- * - Displays the main menu through mainMenu() and processes user input
- * - Continues indefinitely until user confirms exit
- * 
- * Cleanup Phase (on exit):
- * 1. confirmExit() - Prompts user to confirm exit decision
- * 2. saveAttendanceToFile() - Persists current attendance data to
- *                             "data/attendance_log.txt"
- * 3. freeAttendanceList() - Deallocates memory used by attendance records
- * 4. cleanupTokenManager() - Frees resources used by token management system
- */
-
-
 int main() {
     inithashTable();
     loadstudents("data/students.txt");
@@ -132,6 +101,9 @@ void teacherMenu() {
             
             // Start auto-renewal session
             displayTokenWithAutoRenewal(30);
+            
+            // Persist any newly marked attendance at the end of session
+            saveAttendanceToFile("data/attendance_log.txt");
             waitForUserInput(); // Pause before returning to menu
         }
         else if (choice == 2) {
@@ -217,34 +189,37 @@ void studentMenu() {
     
     // Location input with retry
     while (1) {
-        printf("Enter Location (latitude longitude): ");
-        printf("\n[Hint: Use coordinates near (%.6f, %.6f) for valid attendance]\n", classroom_lat, classroom_lon);
-        printf("Latitude Longitude: ");
+        printf("\nEnter Location (latitude longitude): ");
+        printf("\nUse coordinates near (%.6f, %.6f) for valid attendance", classroom_lat, classroom_lon);
+        printf("\nEnter both values on the same line, separated by space");
+        printf("\nLatitude Longitude: ");
         scanf("%lf %lf", &lat, &lon);
 
         if (!validateLocation(lat, lon)) {
             char choice;
-            printf("[ERROR] Location outside classroom range!\n");
-            printf("[INFO] Your coordinates: (%.6f, %.6f)\n", lat, lon);
-            printf("[INFO] Required coordinates: within 100m of (%.6f, %.6f)\n", classroom_lat, classroom_lon);
-            printf("Do you want to try again? (y/n): ");
+            double distance = getDistanceFromClassroom(lat, lon);
+            printf("\nERROR: Location outside classroom range!\n");
+            printf("Your coordinates: (%.6f, %.6f)\n", lat, lon);
+            printf("Classroom location: (%.6f, %.6f)\n", classroom_lat, classroom_lon);
+            printf("Distance: %.2f km (max allowed: 0.1 km or 100 meters)\n", distance);
+            printf("\nDo you want to try again? (y/n): ");
             fflush(stdout);
             clearInputBuffer();
             scanf(" %c", &choice);
             if (choice == 'y' || choice == 'Y') {
                 continue;
             } else {
-                printf("[INFO] Returning to main menu...\n");
+                printf("Returning to main menu...\n");
                 return;
             }
         } else {
-            printf("[SUCCESS] Location validated successfully!\n");
+            printf("\nLocation validated successfully!\n");
             break;
         }
     }
 
     // Mark attendance using linked list
     markAttendance(rollNo, lat, lon, "Present");
-    printf("[INFO] Your location: (%.6f, %.6f)\n", lat, lon);
-    printf("[INFO] Returning to main menu...\n");
+    printf("Your location: (%.6f, %.6f)\n", lat, lon);
+    printf("Returning to main menu...\n");
 }

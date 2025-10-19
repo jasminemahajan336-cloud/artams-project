@@ -2,7 +2,7 @@
 #include "../core/token_manager.h"
 #include <stdio.h>
 #include <ctype.h>
-#include <time.h>
+
 
 #ifdef _WIN32
 #include <windows.h>
@@ -14,7 +14,7 @@
 #else
 #include <unistd.h>
 #define SLEEP(x) sleep(x)
-#define KBHIT() 0  // Simplified for non-Windows
+// KBHIT macro not needed on non-Windows
 #endif
 
 void clearInputBuffer() {

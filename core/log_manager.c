@@ -26,14 +26,16 @@ int isAlreadyMarked(int roll_no) {
 void markAttendance(int roll_no, double lat, double lon, const char* status) {
     // Check if student exists
     Student* student = searchStudent(roll_no);
-    if (!student) {
-        printf("[ERROR] Student with roll number %d not found!\n", roll_no);
+    
+    if (!student) {   // waise iski jarurat nhi hai but safety ke liye okay ( hum confirm kr chuke hai ki student exist krta hai ki nahi)
+
+        printf("Student with roll number %d not found!\n", roll_no);
         return;
     }
     
     // Check if already marked
     if (isAlreadyMarked(roll_no)) {
-        printf("[INFO] Attendance already marked for %s (Roll %d)\n", student->name, roll_no);
+        printf("Attendance already marked for %s (Roll %d)\n", student->name, roll_no);
         return;
     }
     
@@ -43,15 +45,17 @@ void markAttendance(int roll_no, double lat, double lon, const char* status) {
     
     // Save to file
     saveAttendanceToFile("data/attendance_log.txt");
-    
-    printf("[SUCCESS] Attendance marked for %s (Roll %d)\n", student->name, roll_no);
+
+    printf("Attendance marked for %s (Roll %d)\n", student->name, roll_no);
 }
 
+
+// isko use kiya hai humne inside markAttendance function me and 
 void createAttendanceRecord(int roll_no, const char* name, time_t timestamp, double lat, double lon, const char* status) {
     // Allocate memory for new record
     AttendanceRecord* newRecord = (AttendanceRecord*)malloc(sizeof(AttendanceRecord));
     if (newRecord == NULL) {
-        printf("[ERROR] Memory allocation failed!\n");
+        printf("ERROR: Memory allocation failed!\n");
         return;
     }
     
@@ -120,11 +124,10 @@ void loadAttendanceFromFile(const char* filename) {
         char name[50], time_str[20], status_str[10];
         double lat, lon;
         
-        // Parse the line (this is simplified - could be more robust)
         if (sscanf(line, "Roll: %d, Name: %49[^,], Time: %19[^,], Location: (%lf, %lf), Status: %9s",
                    &roll_no, name, time_str, &lat, &lon, status_str) == 6) {
             
-            // Convert time string back to timestamp (simplified)
+            // Convert time string back to timestamp
             time_t timestamp = time(NULL); // For now, use current time
             
             createAttendanceRecord(roll_no, name, timestamp, lat, lon, status_str);
@@ -152,6 +155,7 @@ void showAttendance() {
     printf("===============================================\n");
 }
 
+// used in showAttendance function
 void printAttendanceRecord(const AttendanceRecord* record) {
     struct tm* time_info = localtime(&record->timestamp);
     char time_str[20];
@@ -171,20 +175,4 @@ void freeAttendanceList() {
         free(temp);
     }
     head = NULL;
-}
-
-// For backward compatibility with file-based display
-void showAttendanceFromFile(const char* filename) {
-    FILE* file = fopen(filename, "r");
-    if (!file) {
-        printf("No attendance log found.\n");
-        return;
-    }
-    
-    char line[200];
-    while (fgets(line, sizeof(line), file)) {
-        printf("%s", line);
-    }
-    
-    fclose(file);
 }

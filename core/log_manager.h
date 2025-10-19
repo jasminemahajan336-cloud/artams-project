@@ -27,7 +27,5 @@ void showAttendance();
 void freeAttendanceList();
 void printAttendanceRecord(const AttendanceRecord* record);
 
-// File-based functions (for compatibility)
-void showAttendanceFromFile(const char* filename);
 
 #endif

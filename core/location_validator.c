@@ -47,3 +47,7 @@ int validateLocation(double lat, double lon) {
     }
 }
 
+double getDistanceFromClassroom(double lat, double lon) {
+    return haversineDistance(class_lat, class_lon, lat, lon);
+}
+
