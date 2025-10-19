@@ -50,12 +50,12 @@
 
 | Feature | Description |
 |---------|-------------|
-| 🔐 **Token Authentication** | Auto-renewing 8-character alphanumeric tokens with 30-second validity |
+| 🔐 **Token Authentication** | Simple file-based tokens with 30-second validity |
 | 📡 **GPS Validation** | Location-based verification within 100m radius of classroom |
 | 👥 **Student Database** | Efficient hash table-based student lookup system |
 | 📊 **Attendance Logging** | Chronological linked-list storage with file persistence |
 | 🔄 **Auto-Renewal** | Automatic token regeneration for continuous sessions |
-| 📈 **Analytics** | Token status monitoring and attendance tracking |
+| � **Simple Storage** | File-based token storage without heavy data structures |
 
 ### Security Features
 
@@ -144,8 +144,14 @@ artams-project/
 git clone https://github.com/pwnjoshi/artams-project.git
 cd artams-project
 
-# Compile
-gcc -Wall -Wextra -std=c99 -I./core core/*.c cli/*.c -o artams_cli -lm
+# Option 1: Use batch file (Easiest)
+.\run.bat
+
+# Option 2: Build only
+.\build.bat
+
+# Option 3: Manual compile
+gcc -Wall -Wextra -std=c99 -I core core\*.c cli\*.c -o artams_cli.exe -lm
 
 # Run
 .\artams_cli.exe
@@ -201,12 +207,12 @@ The system comes pre-loaded with sample students:
    │   └─→ Set classroom location (lat, lon)
    │   └─→ Token auto-generates and renews every 30s
    │   └─→ Share token with students
+   │   └─→ Press 'q' to stop session
    │
    ├─→ 3. View Attendance Log (2)
    │   └─→ See all attendance records
    │
-   └─→ 4. View Token Analytics (3)
-       └─→ Check token status and validity
+   └─→ 4. Return to Main Menu (3)
 ```
 
 **Example Session:**
@@ -214,17 +220,25 @@ The system comes pre-loaded with sample students:
 ```
 === ARTAMS - Attendance Management System ===
 
-[Teacher Menu]
+=== Main Menu ===
+Select mode:
+    (1) Teacher
+    (2) Student
+    (3) Exit
+> 1
+
+----Teacher Menu----
 1. Start Attendance Session
 2. View Attendance Log
-3. View Token Analytics
-4. Return to Main Menu
+3. Return to Main Menu
 > 1
 
 === Classroom Location Setup ===
 Enter classroom latitude: 28.6139
 Enter classroom longitude: 77.2090
 Classroom location set to (28.613900, 77.209000) successfully
+
+Press 'q' and Enter to stop the session
 
 [SESSION 1] New token generated: K7M2X9P4
 [TOKEN] K7M2X9P4 (expires in 30 seconds) - Press 'q' + Enter to stop
@@ -250,20 +264,24 @@ Classroom location set to (28.613900, 77.209000) successfully
 
 ```
 === Student Attendance Marking ===
-[INFO] Current classroom location: (28.613900, 77.209000)
-[INFO] You must be within 100 meters of this location
+Current classroom location: (28.613900, 77.209000)
+You must be within 100 meters of this location
 
 Enter Roll No: 101
-[SUCCESS] Student found: Pawan Joshi
+Student found: Pawan Joshi
 
 Enter Token: K7M2X9P4
-[SUCCESS] Token validated successfully!
+Token validated successfully!
 
 Enter Location (latitude longitude): 
-[Hint: Use coordinates near (28.613900, 77.209000) for valid attendance]
+Use coordinates near (28.613900, 77.209000) for valid attendance
+Enter both values on the same line, separated by space
 Latitude Longitude: 28.6140 77.2091
-[SUCCESS] Location validated successfully!
-[SUCCESS] Attendance marked for Pawan Joshi (Roll 101)
+
+Location validated successfully!
+Attendance marked for Pawan Joshi (Roll 101)
+Your location: (28.614000, 77.209100)
+Returning to main menu...
 ```
 
 ## 🔧 Technical Details
@@ -278,11 +296,13 @@ Latitude Longitude: 28.6140 77.2091
 
 ### Token Management
 
-- **Generation**: Random 8-character alphanumeric strings
+- **Generation**: Random 8-character alphanumeric strings using srand/rand
 - **Character Set**: `A-Z` and `0-9` (36 possible characters)
-- **Entropy**: ~41 bits (36^8 combinations)
+- **Storage**: Simple file-based storage in `data/sessions.txt`
+- **Format**: `<TOKEN> <EXPIRY_UNIX_TIMESTAMP>`
 - **Validity Period**: 30 seconds (configurable)
-- **Auto-Renewal**: Seamless token regeneration
+- **Auto-Renewal**: Seamless token regeneration with overwrite
+- **Validation**: File-based read and timestamp comparison
 
 ### Location Validation
 
@@ -291,6 +311,8 @@ Distance Calculation: Haversine Formula
 Radius: 100 meters (0.1 km)
 Precision: 6 decimal places (~0.11m accuracy)
 Validation: Real-time coordinate checking
+Error Feedback: Shows actual distance when validation fails
+Input Format: Both coordinates on same line (e.g., "28.6139 77.2090")
 ```
 
 ## ⚙️ Configuration
@@ -385,11 +407,15 @@ Solution: Ensure -I./core flag is included
 # Token expired
 - Generate new token from teacher menu
 - Ensure token is entered within 30 seconds
+- Token auto-renews during active session
 
 # Location validation failed
+- Enter coordinates on SAME LINE separated by space
+- Example: 28.6140 77.2091 (not on separate lines)
 - Use coordinates near classroom location
-- Check GPS precision (6 decimal places)
-- Verify classroom location is set correctly
+- Check GPS precision (6 decimal places recommended)
+- System shows actual distance when validation fails
+- Verify classroom location is set correctly before student attempts
 ```
 </details>
 
@@ -475,7 +501,7 @@ Project Link: [https://github.com/pwnjoshi/artams-project](https://github.com/pw
 
 </div>
 
-## 🏗 Project Structure
+### 🏗 Project Structure
 
 ```
 artams-project/
@@ -483,31 +509,41 @@ artams-project/
 │   └── main.c              # Main CLI interface and navigation
 ├── core/
 │   ├── student_db.c/.h     # Student database with hash table
-│   ├── token_manager.c/.h  # Token generation and validation
-│   ├── log_manager.c/.h    # Attendance logging system
-│   ├── location_validator.c/.h # GPS location validation
-│   └── utils.c/.h          # Utility functions
+│   ├── token_manager.c/.h  # Simple file-based token management
+│   ├── log_manager.c/.h    # Attendance logging system (linked list)
+│   ├── location_validator.c/.h # GPS location validation with Haversine
+│   └── utils.c/.h          # Utility functions (input, display, etc.)
 ├── data/
 │   ├── students.txt        # Pre-populated student database
-│   ├── sessions.txt        # Active session tokens
-│   └── attendance_log.txt  # Attendance records
+│   ├── sessions.txt        # Current active token (auto-generated)
+│   └── attendance_log.txt  # Attendance records (auto-saved)
 ├── Makefile               # Build automation (Linux/Mac)
-├── run.bat               # Build and run (Windows)
-├── clean.bat            # Clean build files (Windows)
-└── README.md            # This file
+├── build.bat             # Build script (Windows)
+├── run.bat              # Build and run (Windows)
+├── clean.bat           # Clean build files (Windows)
+└── README.md          # This file
 ```
 
 ## 🚀 How to Build and Run
 
 ### Windows (Recommended)
 
-1. **Quick Start**: Double-click `run.bat` - this will automatically build and run the program.
+#### Option 1: Using Batch Files (Easiest)
+1. **Build and Run**: Double-click `run.bat`
+2. **Build Only**: Double-click `build.bat`
+3. **Clean Build Files**: Double-click `clean.bat`
 
-2. **Manual Build**:
-   ```cmd
-   gcc -Wall -Wextra -std=c99 -I./core core/*.c cli/*.c -o artams_cli -lm
-   artams_cli.exe
-   ```
+#### Option 2: Command Line
+```cmd
+# Build
+gcc -Wall -Wextra -std=c99 -I core core\*.c cli\*.c -o artams_cli.exe -lm
+
+# Run
+artams_cli.exe
+
+# Clean (optional)
+del *.exe *.o core\*.o cli\*.o
+```
 
 ### Linux/Mac
 
@@ -515,80 +551,105 @@ artams-project/
    ```bash
    make
    ./artams_cli
+   
+   # Clean
+   make clean
    ```
 
 2. **Manual Build**:
    ```bash
-   gcc -Wall -Wextra -std=c99 -I./core core/*.c cli/*.c -o artams_cli -lm
+   gcc -Wall -Wextra -std=c99 -I core core/*.c cli/*.c -o artams_cli -lm
    ./artams_cli
    ```
 
 ## 🎯 Features Implemented
 
 ### ✅ Core Functionality
-- **Student Database**: Hash table-based student lookup system
-- **Token Management**: Secure token generation with expiry validation
-- **Location Validation**: GPS-based attendance verification (100m radius)
-- **Attendance Logging**: Comprehensive attendance record keeping
-- **CLI Navigation**: User-friendly teacher and student interfaces
+- **Student Database**: Hash table-based student lookup system (O(1) average)
+- **Token Management**: Simple file-based token generation with expiry validation
+- **Location Validation**: GPS-based attendance verification using Haversine formula (100m radius)
+- **Attendance Logging**: Linked-list based attendance record keeping with file persistence
+- **CLI Navigation**: User-friendly teacher and student interfaces with retry mechanisms
 
 ### ✅ Security Features
-- Time-limited session tokens (30 seconds default)
-- Location-based attendance verification
-- Student identity validation
-- Secure file-based data storage
+- Time-limited session tokens (30 seconds default, configurable)
+- Location-based attendance verification with distance feedback
+- Student identity validation against database
+- Secure file-based data storage with auto-save
+- Input validation and error handling with retry prompts
 
 ## 📱 How to Use
 
 ### Teacher Workflow:
 1. Run the program and select **Teacher Mode (1)**
 2. Choose **"Start Attendance Session (1)"**
-3. A secure token will be generated and displayed (valid for 30 seconds)
-4. Share this token with students for attendance marking
-5. Use **"View Attendance Log (2)"** to see all attendance records
+3. Enter classroom location (latitude and longitude)
+4. A secure token will be generated and auto-renews every 30 seconds
+5. Share this token with students for attendance marking
+6. Press 'q' and Enter to stop the session
+7. Use **"View Attendance Log (2)"** to see all attendance records
 
 ### Student Workflow:
 1. Run the program and select **Student Mode (2)**
 2. Enter your **Roll Number** (must exist in students database)
-3. Enter the **token** provided by teacher
-4. Enter your **GPS coordinates** (latitude longitude)
+3. Enter the **token** provided by teacher (within 30 seconds of generation)
+4. Enter your **GPS coordinates** (latitude longitude on same line)
+   - Example format: `28.6140 77.2091`
    - For testing: Use coordinates near `28.6139 77.2090` (classroom location)
    - Must be within 100 meters of classroom
 5. System validates all inputs and marks attendance if successful
+6. View detailed distance feedback if location validation fails
 
 ## 📊 Sample Usage
 
 ### Teacher Session:
 ```
 === ARTAMS - Attendance Management System ===
-Select mode: (1) Teacher  (2) Student: 1
-
-[Teacher Menu]
-1. Start Attendance Session
-2. View Attendance Log
-3. Exit
+Select mode: (1) Teacher  (2) Student  (3) Exit
 > 1
 
-✅ Session started!
-🔑 Token: A2B9X7K1 (valid for 30 seconds)
-📍 Students must be within 100m of classroom location
+----Teacher Menu----
+1. Start Attendance Session
+2. View Attendance Log
+3. Return to Main Menu
+> 1
+
+=== Classroom Location Setup ===
+Enter classroom latitude: 28.6139
+Enter classroom longitude: 77.2090
+Classroom location set to (28.613900, 77.209000) successfully
+
+Press 'q' and Enter to stop the session
+
+[SESSION 1] New token generated: A2B9X7K1
+[TOKEN] A2B9X7K1 (expires in 30 seconds) - Press 'q' + Enter to stop
 ```
 
 ### Student Session:
 ```
 === ARTAMS - Attendance Management System ===
-Select mode: (1) Teacher  (2) Student: 2
+Select mode: (1) Teacher  (2) Student  (3) Exit
+> 2
 
 === Student Attendance Marking ===
+Current classroom location: (28.613900, 77.209000)
+You must be within 100 meters of this location
+
 Enter Roll No: 101
-✅ Student found: Pawan Joshi
+Student found: Pawan Joshi
+
 Enter Token: A2B9X7K1
-✅ Token validated successfully!
+Token validated successfully!
+
 Enter Location (latitude longitude): 
-[Hint: Try coordinates near 28.6139 77.2090 for valid location]
+Use coordinates near (28.613900, 77.209000) for valid attendance
+Enter both values on the same line, separated by space
 Latitude Longitude: 28.6140 77.2091
-✅ Location validated successfully!
-🎉 Attendance marked successfully for Pawan Joshi (Roll 101)!
+
+Location validated successfully!
+Attendance marked for Pawan Joshi (Roll 101)
+Your location: (28.614000, 77.209100)
+Returning to main menu...
 ```
 
 ## 📁 Data Files
