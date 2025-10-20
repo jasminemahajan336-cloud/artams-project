@@ -19,8 +19,10 @@ int main() {
     initAttendanceLog();
     loadAttendanceFromFile("data/attendance_log.txt");
     
-    // agar Token manager me min heap aur hast set kuch use kiya to initialize karna padega
-    // else Token manager requires no explicit initialization
+    // Load classroom location from file (for cross-process sharing)
+    loadClassroomLocation();
+    
+    // Token manager requires no explicit initialization
     
     printf("=== ARTAMS - Attendance Management System ===\n");
 
