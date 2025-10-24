@@ -32,11 +32,8 @@ int main() {
         
         // Ask user if they want to exit
         if (confirmExit()) {
-            // Save attendance to file before exiting
-            saveAttendanceToFile("data/attendance_log.txt");
+
             freeAttendanceList();
-            
-            // Token manager requires no explicit cleanup
             break;
         }
     }

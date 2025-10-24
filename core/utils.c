@@ -33,11 +33,10 @@ int confirmExit() {
     choice = tolower(choice);
     
     if (choice == 'y') {
-        printf("Thank you for using ARTAMS! Goodbye!\n");
-        return 1; // Exit confirmed
+        return 1; // Exit karega
     } else {
-        printf("Returning to main menu...\n");
-        return 0; // Don't exit
+        // main menu me return karega
+        return 0; 
     }
 }
 
