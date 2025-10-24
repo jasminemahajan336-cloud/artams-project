@@ -1,2 +1,1 @@
-Roll: 101, Name: Pawan Joshi, Time: 2025-10-20 15:29:04, Location: (0.000000, 0.000000), Status: Present
-Roll: 102, Name: Anushka Goel, Time: 2025-10-20 15:29:04, Location: (0.000000, 0.000000), Status: Present
+Roll: 101, Name: Pawan Joshi, Time: 2025-10-24 11:18:32, Location: (1.000000, 1.000000), Status: Present

@@ -41,9 +41,8 @@ void markAttendance(int roll_no, double lat, double lon, const char* status) {
     
     // Create new attendance record
     time_t current_time = time(NULL);
+    // Create new attendance record and persist it
     createAttendanceRecord(roll_no, student->name, current_time, lat, lon, status);
-    
-    // Save to file
     saveAttendanceToFile("data/attendance_log.txt");
 
     printf("Attendance marked for %s (Roll %d)\n", student->name, roll_no);
@@ -91,7 +90,7 @@ void createAttendanceRecord(int roll_no, const char* name, time_t timestamp, dou
 void saveAttendanceToFile(const char* filename) {
     FILE* file = fopen(filename, "w");
     if (!file) {
-        printf("[ERROR] Could not save to file %s\n", filename);
+        printf("Error- Could not save to file %s\n", filename);
         return;
     }
     

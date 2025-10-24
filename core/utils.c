@@ -55,18 +55,17 @@ void displayTokenWithAutoRenewal(int duration) {
     
     while (1) {
         
-        // Generate new token
         generateToken(token);
         saveToken("data/sessions.txt", token, duration);
         
-        printf("\n[SESSION %d] New token generated: %s\n", session_count, token);
+        printf("\nSESSION %d - New token generated: %s\n", session_count, token);
         
         // Display countdown with key check
         for (int i = duration; i > 0; i--) {
-            printf("\r[TOKEN] %s (expires in %d seconds) - Press 'q' + Enter to stop   ", token, i);
+            printf("\rTOKEN expiring in %d seconds - Press 'q' + Enter to stop   ", i);
             fflush(stdout);
             
-            // Check for user input (Windows only for now)
+            // Check for user input
             #ifdef _WIN32
             if (KBHIT()) {
                 char ch = _getch();

@@ -104,17 +104,15 @@ void teacherMenu() {
             // Start auto-renewal session
             displayTokenWithAutoRenewal(30);
             
-            // Persist any newly marked attendance at the end of session
-            saveAttendanceToFile("data/attendance_log.txt");
             waitForUserInput(); // Pause before returning to menu
         }
         else if (choice == 2) {
             printf("\n--- Attendance Log ---\n");
+            loadAttendanceFromFile("data/attendance_log.txt");
             showAttendance(); // Use linked list display
             waitForUserInput(); // Pause before returning to menu   
         } 
         else if (choice == 3) {
-            printf("Returning to Main Menu...\n");
             break;
         } 
         else {
@@ -222,6 +220,7 @@ void studentMenu() {
 
     // Mark attendance using linked list
     markAttendance(rollNo, lat, lon, "Present");
+
     printf("Your location: (%.6f, %.6f)\n", lat, lon);
     printf("Returning to main menu...\n");
 }
