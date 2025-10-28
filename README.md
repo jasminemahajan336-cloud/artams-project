@@ -328,7 +328,7 @@ setClassroomLocation(28.6139, 77.2090);  // New Delhi coordinates
 
 Edit in `cli/main.c`:
 ```c
-displayTokenWithAutoRenewal(30);  // 30 seconds
+displayToken(30);  // 30 seconds
 ```
 
 ### Change Location Radius

@@ -6,7 +6,7 @@
 
 void generateToken(char* token) {
     const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    int length = TOKEN_LENGTH;
+    int length = 8;
     
     srand((unsigned int)time(NULL));
     
@@ -29,7 +29,6 @@ void saveToken(const char* filename, const char* token, int validity_seconds) {
     fprintf(file, "%s %ld\n", token, expiry_time);
     fclose(file);
 }
-
 
 int validateToken(const char* filename, const char* token) {
     FILE* file = fopen(filename, "r");

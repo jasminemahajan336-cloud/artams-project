@@ -15,22 +15,17 @@ int main() {
     inithashTable();
     loadstudents("data/students.txt");
     
-    // Initialize attendance log
     initAttendanceLog();
     loadAttendanceFromFile("data/attendance_log.txt");
     
-    // Load classroom location from file (for cross-process sharing)
     loadClassroomLocation();
-    
-    // Token manager requires no explicit initialization
-    
-    printf("=== ARTAMS - Attendance Management System ===\n");
+        
+    printf("=== ARTAMS - Hamara Attendance Management System ===\n");
 
 
     while (1) {
         mainMenu();
         
-        // Ask user if they want to exit
         if (confirmExit()) {
 
             freeAttendanceList();
@@ -41,19 +36,15 @@ int main() {
     return 0;
 }
 
-// ---------------------------MAIN MENU FUNCTIONS ---------------------------
-
 void mainMenu() {
     int mode;
-
-    printf("\n=== Main Menu ===\n");
 
     printf("\n Select mode:\n"
         "    (1) Teacher\n"
         "    (2) Student\n"
         "    (3) Exit: \n");
     
-    printf("> ");  // ye style ke liye hai prompt ka
+    printf("> ");  
     fflush(stdout); // It is to ensure prompt is displayed before input ( maltab upar wala printf stays in buffer otherwise)
     
     scanf("%d", &mode);
@@ -68,11 +59,9 @@ void mainMenu() {
         return;
     }
     else {
-        printf("Invalid choice! Please select 1, 2, or 3.\n");
+        printf("Invalid choice!\n");
     }
 }
-
-// ----------------------------TEACHER MENU FUNCTIONS ---------------------------
 
 void teacherMenu() {
     int choice;
@@ -89,7 +78,6 @@ void teacherMenu() {
 
         if (choice == 1) {
 
-            printf("\n=== Classroom Location Setup ===\n");
             printf("Enter classroom latitude: ");
             scanf("%lf", &lat);
             printf("Enter classroom longitude: ");
@@ -98,28 +86,24 @@ void teacherMenu() {
             setClassroomLocation(lat, lon);
             printf("Classroom location set to (%.6f, %.6f) successfully\n", lat, lon);
             
-            // Start auto-renewal session
-            displayTokenWithAutoRenewal(30);
+            displayToken(30);
             
-            waitForUserInput(); // Pause before returning to menu
+            waitForUserInput(); 
         }
         else if (choice == 2) {
             printf("\n--- Attendance Log ---\n");
             loadAttendanceFromFile("data/attendance_log.txt");
             showAttendance(); // Use linked list display
-            waitForUserInput(); // Pause before returning to menu   
+            waitForUserInput(); 
         } 
         else if (choice == 3) {
             break;
         } 
         else {
-            printf("Invalid choice. Please select 1, 2, or 3.\n");
+            printf("Invalid choice!\n");
         }
     }
 }
-
-
-// ----------------------------STUDENT MENU FUNCTIONS ---------------------------
 
 void studentMenu() {
     int rollNo;
@@ -130,12 +114,8 @@ void studentMenu() {
 
     printf("\n=== Student Attendance Marking ===\n");
     
-    // Get current classroom location for student reference
     getCurrentClassroomLocation(&classroom_lat, &classroom_lon);
-    printf("Current classroom location: (%.6f, %.6f)\n", classroom_lat, classroom_lon);
-    printf("You must be within 100 meters of this location\n");
 
-    // Roll number input with retry
     while (1) {
         printf("\nEnter Roll No: ");
         scanf("%d", &rollNo);
@@ -187,9 +167,6 @@ void studentMenu() {
     // Location input with retry
     while (1) {
         printf("\nEnter Location (latitude longitude): ");
-        printf("\nUse coordinates near (%.6f, %.6f) for valid attendance", classroom_lat, classroom_lon);
-        printf("\nEnter both values on the same line, separated by space");
-        printf("\nLatitude Longitude: ");
         scanf("%lf %lf", &lat, &lon);
 
         if (!validateLocation(lat, lon)) {
@@ -219,5 +196,4 @@ void studentMenu() {
     markAttendance(rollNo, lat, lon, "Present");
 
     printf("Your location: (%.6f, %.6f)\n", lat, lon);
-    printf("Returning to main menu...\n");
 }

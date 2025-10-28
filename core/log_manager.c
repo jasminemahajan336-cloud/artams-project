@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-// Global head pointer for the linked list
 static AttendanceRecord* head = NULL;
 
 void initAttendanceLog() {
@@ -114,7 +113,7 @@ void saveAttendanceToFile(const char* filename) {
 void loadAttendanceFromFile(const char* filename) {
     FILE* file = fopen(filename, "r");
     if (!file) {
-        return; // File doesn't exist yet
+        return;
     }
     
     char line[200];
@@ -127,7 +126,7 @@ void loadAttendanceFromFile(const char* filename) {
                    &roll_no, name, time_str, &lat, &lon, status_str) == 6) {
             
             // Convert time string back to timestamp
-            time_t timestamp = time(NULL); // For now, use current time
+            time_t timestamp = time(NULL); 
             
             createAttendanceRecord(roll_no, name, timestamp, lat, lon, status_str);
         }
@@ -142,7 +141,7 @@ void showAttendance() {
         return;
     }
     
-    printf("\n=== Attendance Records (Chronological Order) ===\n");
+    printf("\n=== Attendance Records ===\n");
     AttendanceRecord* current = head;
     int count = 1;
     
@@ -151,7 +150,6 @@ void showAttendance() {
         printAttendanceRecord(current);
         current = current->next;
     }
-    printf("===============================================\n");
 }
 
 // used in showAttendance function

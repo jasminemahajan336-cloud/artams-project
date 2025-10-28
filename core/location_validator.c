@@ -34,7 +34,6 @@ void setClassroomLocation(double lat, double lon) {
     class_lat = lat;
     class_lon = lon;
     
-    // Save to file for cross-process sharing
     FILE* file = fopen(CLASSROOM_FILE, "w");
     if (file) {
         fprintf(file, "%.6f %.6f\n", lat, lon);
@@ -46,7 +45,6 @@ void loadClassroomLocation() {
     FILE* file = fopen(CLASSROOM_FILE, "r");
     if (file) {
         if (fscanf(file, "%lf %lf", &class_lat, &class_lon) != 2) {
-            // Failed to read, keep defaults (0, 0)
             class_lat = 0.0;
             class_lon = 0.0;
         }
@@ -65,7 +63,7 @@ void getCurrentClassroomLocation(double* lat, double* lon) {
 }
 
 int validateLocation(double lat, double lon) {
-    // Ensure classroom location is loaded from file
+
     if (class_lat == 0.0 && class_lon == 0.0) {
         loadClassroomLocation();
     }

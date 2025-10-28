@@ -8,7 +8,7 @@
 #include <windows.h>
 #include <conio.h>
 
-#define SLEEP(x) Sleep(x * 1000)  // ye aapka displayTokenWithAutoRenewal function me time delay ke liye hai
+#define SLEEP(x) Sleep(x * 1000)  // time delay used in displayToken function
 
 #define KBHIT() _kbhit()
 #else
@@ -46,7 +46,7 @@ void waitForUserInput() {
     getchar();
 }
 
-void displayTokenWithAutoRenewal(int duration) {
+void displayToken(int duration) {
     char token[16];
     int session_count = 1;
     
@@ -58,8 +58,8 @@ void displayTokenWithAutoRenewal(int duration) {
         saveToken("data/sessions.txt", token, duration);
         
         printf("\nSESSION %d - New token generated: %s\n", session_count, token);
-        
-        // Display countdown with key check
+
+        // countdown dikhaoo
         for (int i = duration; i > 0; i--) {
             printf("\rTOKEN expiring in %d seconds - Press 'q' + Enter to stop   ", i);
             fflush(stdout);
@@ -69,7 +69,6 @@ void displayTokenWithAutoRenewal(int duration) {
             if (KBHIT()) {
                 char ch = _getch();
                 if (ch == 'q' || ch == 'Q') {
-                    printf("\nSession stopped by user.\n");
                     return;
                 }
             }
@@ -81,7 +80,6 @@ void displayTokenWithAutoRenewal(int duration) {
         printf("\r Token %s has expired! Generating new token...     \n", token);
         session_count++;
         
-        // Small delay before next token
         SLEEP(1);
     }
 }
