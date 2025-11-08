@@ -5,8 +5,11 @@
 #include "student_db.h"
 
 #define TEACHER_FILE "data/teachers.txt"
+#define STUDENT_ACCOUNT_FILE "data/student_accounts.txt"
 
-// Simple teacher login system
+// ============================================
+// TEACHER LOGIN
+// ============================================
 int teacherLogin() {
     char username[50], password[50], stored_user[50], stored_pass[50];
     FILE *file = fopen(TEACHER_FILE, "r");
@@ -40,27 +43,49 @@ int teacherLogin() {
     }
 }
 
-// Student "login" simply checks roll and name
+// ============================================
+// STUDENT LOGIN
+// ============================================
 int studentLogin() {
     int rollno;
-    char name[50];
+    char password[50];
+    char stored_pass[50];
+    int stored_roll;
     Student *s;
+
+    FILE *file = fopen(STUDENT_ACCOUNT_FILE, "r");
+    if (!file) {
+        printf("⚠️ Error: Could not open %s\n", STUDENT_ACCOUNT_FILE);
+        return 0;
+    }
 
     printf("\n=== Student Login ===\n");
     printf("Enter Roll Number: ");
     scanf("%d", &rollno);
-    getchar();
+    printf("Enter Password: ");
+    scanf("%s", password);
 
-    printf("Enter Name: ");
-    fgets(name, sizeof(name), stdin);
-    name[strcspn(name, "\n")] = 0;
+    int authenticated = 0;
+    while (fscanf(file, "%d,%49[^\n]\n", &stored_roll, stored_pass) == 2) {
+        if (rollno == stored_roll && strcmp(password, stored_pass) == 0) {
+            authenticated = 1;
+            break;
+        }
+    }
+    fclose(file);
 
-    s = searchStudent(rollno);
-    if (s && strcmp(s->name, name) == 0) {
-        printf("✅ Welcome %s!\n", s->name);
-        return 1;
-    } else {
-        printf("❌ Invalid roll number or name.\n");
+    if (!authenticated) {
+        printf("❌ Invalid roll number or password.\n");
         return 0;
     }
+
+    // Also verify rollno exists in student database
+    s = searchStudent(rollno);
+    if (!s) {
+        printf("⚠️ Student record not found in database.\n");
+        return 0;
+    }
+
+    printf("✅ Welcome %s!\n", s->name);
+    return 1;
 }
