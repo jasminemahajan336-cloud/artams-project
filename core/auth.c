@@ -6,6 +6,7 @@
 
 #define TEACHER_FILE "data/teachers.txt"
 
+// Simple teacher login system
 int teacherLogin() {
     char username[50], password[50], stored_user[50], stored_pass[50];
     FILE *file = fopen(TEACHER_FILE, "r");
@@ -39,6 +40,7 @@ int teacherLogin() {
     }
 }
 
+// Student "login" simply checks roll and name
 int studentLogin() {
     int rollno;
     char name[50];
