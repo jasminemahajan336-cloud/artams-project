@@ -7,14 +7,13 @@
 #define TEACHER_FILE "data/teachers.txt"
 #define STUDENT_ACCOUNT_FILE "data/student_accounts.txt"
 
-// ============================================
 // TEACHER LOGIN
-// ============================================
+
 int teacherLogin() {
     char username[50], password[50], stored_user[50], stored_pass[50];
     FILE *file = fopen(TEACHER_FILE, "r");
     if (!file) {
-        printf("⚠️ Error: Could not open %s\n", TEACHER_FILE);
+        printf("Error: Could not open %s\n", TEACHER_FILE);
         return 0;
     }
 
@@ -35,17 +34,15 @@ int teacherLogin() {
     fclose(file);
 
     if (success) {
-        printf("✅ Login successful! Welcome, %s\n", username);
+        printf("Login successful! Welcome, %s\n", username);
         return 1;
     } else {
-        printf("❌ Invalid credentials. Access denied.\n");
+        printf("Invalid credentials. Access denied.\n");
         return 0;
     }
 }
 
-// ============================================
 // STUDENT LOGIN
-// ============================================
 int studentLogin() {
     int rollno;
     char password[50];
@@ -55,7 +52,7 @@ int studentLogin() {
 
     FILE *file = fopen(STUDENT_ACCOUNT_FILE, "r");
     if (!file) {
-        printf("⚠️ Error: Could not open %s\n", STUDENT_ACCOUNT_FILE);
+        printf("Error: Could not open %s\n", STUDENT_ACCOUNT_FILE);
         return 0;
     }
 
@@ -82,10 +79,10 @@ int studentLogin() {
     // Also verify rollno exists in student database
     s = searchStudent(rollno);
     if (!s) {
-        printf("⚠️ Student record not found in database.\n");
+        printf("Student record not found in database.\n");
         return 0;
     }
 
-    printf("✅ Welcome %s!\n", s->name);
+    printf("Welcome %s!\n", s->name);
     return 1;
 }

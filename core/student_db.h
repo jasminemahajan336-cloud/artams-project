@@ -17,9 +17,7 @@ void loadstudents(const char *filename);
 Student *searchStudent(int rollno);
 void displaystudents();
 
-// ==============================================
-// 🧑‍🏫 Teacher Functions (Enhancement)
-// ==============================================
+// Teacher Functions (Enhancement)
 void add_student_teacher(const char *filename, int rollno, const char *name);
 void remove_student_teacher(const char *filename, int rollno);
 

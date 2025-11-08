@@ -73,17 +73,15 @@ void loadstudents(const char *filename)
     fclose(file);
 }
 
-/* =======================================================
-   🧑‍🏫 TEACHER FUNCTIONS
-   These safely extend your system — no overwriting.
-   ======================================================= */
+// TEACHER FUNCTIONS
+
 
 // Add a new student (update hash table + file)
 void add_student_teacher(const char *filename, int rollno, const char *name)
 {
     if (searchStudent(rollno))
     {
-        printf("⚠️ Student with roll %d already exists.\n", rollno);
+        printf("Student with roll %d already exists.\n", rollno);
         return;
     }
 
@@ -100,7 +98,7 @@ void add_student_teacher(const char *filename, int rollno, const char *name)
     fprintf(file, "%d,%s\n", rollno, name);
     fclose(file);
 
-    printf("✅ Student added successfully: Roll %d, Name %s\n", rollno, name);
+    printf("Student added successfully: Roll %d, Name %s\n", rollno, name);
 }
 
 // Remove student (update hash table + file)
@@ -131,7 +129,7 @@ void remove_student_teacher(const char *filename, int rollno)
 
     if (!found)
     {
-        printf("⚠️ Student with roll %d not found.\n", rollno);
+        printf("Student with roll %d not found.\n", rollno);
         return;
     }
 
@@ -160,5 +158,5 @@ void remove_student_teacher(const char *filename, int rollno)
     remove(filename);
     rename("temp.txt", filename);
 
-    printf("🗑️ Student with roll %d removed successfully.\n", rollno);
+    printf("Student with roll %d removed successfully.\n", rollno);
 }

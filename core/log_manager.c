@@ -42,7 +42,7 @@ void markAttendance(int roll_no, double lat, double lon, const char* status) {
     time_t current_time = time(NULL);
     // Create new attendance record and persist it
     createAttendanceRecord(roll_no, student->name, current_time, lat, lon, status);
-    saveAttendanceToFile("data/attendance_log.txt");
+    saveAttendanceToFile("data/attendance_log.txt"); 
 
     printf("Attendance marked for %s (Roll %d)\n", student->name, roll_no);
 }
@@ -125,8 +125,17 @@ void loadAttendanceFromFile(const char* filename) {
         if (sscanf(line, "Roll: %d, Name: %49[^,], Time: %19[^,], Location: (%lf, %lf), Status: %9s",
                    &roll_no, name, time_str, &lat, &lon, status_str) == 6) {
             
-            // Convert time string back to timestamp
-            time_t timestamp = time(NULL); 
+            // Parse time string back to timestamp
+            struct tm tm_time = {0};
+            sscanf(time_str, "%d-%d-%d %d:%d:%d", 
+                   &tm_time.tm_year, &tm_time.tm_mon, &tm_time.tm_mday,
+                   &tm_time.tm_hour, &tm_time.tm_min, &tm_time.tm_sec);
+            
+            tm_time.tm_year -= 1900;  // Years since 1900
+            tm_time.tm_mon -= 1;       // Months are 0-11
+            tm_time.tm_isdst = -1;     // Let system determine DST
+            
+            time_t timestamp = mktime(&tm_time);
             
             createAttendanceRecord(roll_no, name, timestamp, lat, lon, status_str);
         }

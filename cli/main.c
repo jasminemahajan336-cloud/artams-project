@@ -6,7 +6,7 @@
 #include "../core/log_manager.h"
 #include "../core/location_validator.h"
 #include "../core/utils.h"
-#include "../core/auth.h"   // ✅ NEW include for authentication
+#include "../core/auth.h"  
 
 void teacherMenu();
 void studentMenu();
@@ -48,14 +48,14 @@ void mainMenu() {
     scanf("%d", &mode);
 
     if (mode == 1) {
-        if (teacherLogin()) {   // ✅ Teacher authentication
+        if (teacherLogin()) {   // Teacher authentication
             teacherMenu();
         } else {
             printf("Returning to main menu...\n");
         }
     }
     else if (mode == 2) {
-        if (studentLogin()) {   // ✅ Student authentication
+        if (studentLogin()) {   // Student authentication
             studentMenu();
         } else {
             printf("Returning to main menu...\n");
@@ -102,11 +102,10 @@ void teacherMenu() {
         }
         else if (choice == 2) {
             printf("\n--- Attendance Log ---\n");
-            loadAttendanceFromFile("data/attendance_log.txt");
             showAttendance(); 
             waitForUserInput(); 
         } 
-        else if (choice == 3) { // ✅ Add student
+        else if (choice == 3) { // Add student
             printf("\nEnter Roll Number: ");
             scanf("%d", &rollNo);
             getchar(); // clear newline
@@ -117,13 +116,13 @@ void teacherMenu() {
             add_student_teacher(student_file, rollNo, name);
             waitForUserInput();
         }
-        else if (choice == 4) { // ✅ Remove student
+        else if (choice == 4) { // Remove student
             printf("\nEnter Roll Number to Remove: ");
             scanf("%d", &rollNo);
             remove_student_teacher(student_file, rollNo);
             waitForUserInput();
         }
-        else if (choice == 5) { // ✅ View students
+        else if (choice == 5) { // View students
             displaystudents();
             waitForUserInput();
         }
