@@ -6,6 +6,7 @@
 #include "../core/log_manager.h"
 #include "../core/location_validator.h"
 #include "../core/utils.h"
+#include "../core/auth.h"   // ✅ NEW include for authentication
 
 void teacherMenu();
 void studentMenu();
@@ -22,12 +23,10 @@ int main() {
         
     printf("=== ARTAMS - Hamara Attendance Management System ===\n");
 
-
     while (1) {
         mainMenu();
         
         if (confirmExit()) {
-
             freeAttendanceList();
             break;
         }
@@ -40,20 +39,27 @@ void mainMenu() {
     int mode;
 
     printf("\n Select mode:\n"
-        "    (1) Teacher\n"
-        "    (2) Student\n"
-        "    (3) Exit: \n");
+        "    (1) Teacher Login\n"
+        "    (2) Student Login\n"
+        "    (3) Exit\n");
     
     printf("> ");  
-    fflush(stdout); // It is to ensure prompt is displayed before input ( maltab upar wala printf stays in buffer otherwise)
-    
+    fflush(stdout);
     scanf("%d", &mode);
 
     if (mode == 1) {
-        teacherMenu();
+        if (teacherLogin()) {   // ✅ Teacher authentication
+            teacherMenu();
+        } else {
+            printf("Returning to main menu...\n");
+        }
     }
     else if (mode == 2) {
-        studentMenu();
+        if (studentLogin()) {   // ✅ Student authentication
+            studentMenu();
+        } else {
+            printf("Returning to main menu...\n");
+        }
     }
     else if (mode == 3) {
         return;
@@ -66,18 +72,23 @@ void mainMenu() {
 void teacherMenu() {
     int choice;
     double lat, lon;
+    int rollNo;
+    char name[50];
+    const char *student_file = "data/students.txt";
 
     while (1) {
         printf("\n----Teacher Menu----\n");
         printf("1. Start Attendance Session\n");
         printf("2. View Attendance Log\n");
-        printf("3. Return to Main Menu\n");
+        printf("3. Add Student\n");
+        printf("4. Remove Student\n");
+        printf("5. View Students\n");
+        printf("6. Return to Main Menu\n");
         printf("> ");
         fflush(stdout);
         scanf("%d", &choice);
 
         if (choice == 1) {
-
             printf("Enter classroom latitude: ");
             scanf("%lf", &lat);
             printf("Enter classroom longitude: ");
@@ -87,16 +98,36 @@ void teacherMenu() {
             printf("Classroom location set to (%.6f, %.6f) successfully\n", lat, lon);
             
             displayToken(30);
-            
             waitForUserInput(); 
         }
         else if (choice == 2) {
             printf("\n--- Attendance Log ---\n");
             loadAttendanceFromFile("data/attendance_log.txt");
-            showAttendance(); // Use linked list display
+            showAttendance(); 
             waitForUserInput(); 
         } 
-        else if (choice == 3) {
+        else if (choice == 3) { // ✅ Add student
+            printf("\nEnter Roll Number: ");
+            scanf("%d", &rollNo);
+            getchar(); // clear newline
+            printf("Enter Student Name: ");
+            fgets(name, sizeof(name), stdin);
+            name[strcspn(name, "\n")] = 0;
+
+            add_student_teacher(student_file, rollNo, name);
+            waitForUserInput();
+        }
+        else if (choice == 4) { // ✅ Remove student
+            printf("\nEnter Roll Number to Remove: ");
+            scanf("%d", &rollNo);
+            remove_student_teacher(student_file, rollNo);
+            waitForUserInput();
+        }
+        else if (choice == 5) { // ✅ View students
+            displaystudents();
+            waitForUserInput();
+        }
+        else if (choice == 6) {
             break;
         } 
         else {
@@ -140,7 +171,6 @@ void studentMenu() {
         }
     }
     
-    // Token input with retry
     while (1) {
         printf("Enter Token: ");
         scanf("%s", token);
@@ -164,7 +194,6 @@ void studentMenu() {
         }
     }
     
-    // Location input with retry
     while (1) {
         printf("\nEnter Location (latitude longitude): ");
         scanf("%lf %lf", &lat, &lon);
@@ -192,7 +221,6 @@ void studentMenu() {
         }
     }
 
-    // Mark attendance using linked list
     markAttendance(rollNo, lat, lon, "Present");
 
     printf("Your location: (%.6f, %.6f)\n", lat, lon);
