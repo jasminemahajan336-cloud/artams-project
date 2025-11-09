@@ -12,6 +12,28 @@ void initAttendanceLog() {
 }
 
 int isAlreadyMarked(int roll_no) {
+    // Check if student is already marked TODAY
+    char* todayDate = getCurrentDateString();
+    char filename[100];
+    snprintf(filename, sizeof(filename), "data/attendance_%s.txt", todayDate);
+    
+    FILE* file = fopen(filename, "r");
+    if (file) {
+        char line[200];
+        int stored_roll;
+        
+        while (fgets(line, sizeof(line), file)) {
+            if (sscanf(line, "Roll: %d,", &stored_roll) == 1) {
+                if (stored_roll == roll_no) {
+                    fclose(file);
+                    return 1; // Already marked today
+                }
+            }
+        }
+        fclose(file);
+    }
+    
+    // Also check in-memory list (fallback)
     AttendanceRecord* current = head;
     while (current != NULL) {
         if (current->roll_no == roll_no) {
@@ -42,9 +64,16 @@ void markAttendance(int roll_no, double lat, double lon, const char* status) {
     time_t current_time = time(NULL);
     // Create new attendance record and persist it
     createAttendanceRecord(roll_no, student->name, current_time, lat, lon, status);
+    
+    // Save to main log file
     saveAttendanceToFile("data/attendance_log.txt"); 
+    
+    // DYNAMIC: Also save to date-specific file
+    char* currentDate = getCurrentDateString();
+    saveAttendanceByDate(currentDate);
 
     printf("Attendance marked for %s (Roll %d)\n", student->name, roll_no);
+    printf("Saved to date file: attendance_%s.txt\n", currentDate);
 }
 
 
@@ -181,4 +210,125 @@ void freeAttendanceList() {
         free(temp);
     }
     head = NULL;
+}
+// Date-based functions implementation
+
+void saveAttendanceByDate(const char* date) {
+    char filename[100];
+    snprintf(filename, sizeof(filename), "data/attendance_%s.txt", date);
+    
+    // Check if file exists, if not create it
+    FILE* file = fopen(filename, "a"); // Append mode for dynamic creation
+    if (!file) {
+        printf("Error: Could not create/open %s\n", filename);
+        return;
+    }
+    
+    // Find the most recent attendance record (last one added)
+    AttendanceRecord* current = head;
+    AttendanceRecord* lastRecord = NULL;
+    
+    while (current != NULL) {
+        lastRecord = current;
+        current = current->next;
+    }
+    
+    if (lastRecord != NULL) {
+        // Write only the latest record to the date file
+        struct tm* time_info = localtime(&lastRecord->timestamp);
+        char time_str[20];
+        strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", time_info);
+        
+        fprintf(file, "Roll: %d, Name: %s, Time: %s, Location: (%.6f, %.6f), Status: %s\n",
+                lastRecord->roll_no, lastRecord->name, time_str, 
+                lastRecord->latitude, lastRecord->longitude,
+                lastRecord->status == PRESENT ? "Present" : "Absent");
+    }
+    
+    fclose(file);
+}
+
+void loadAttendanceByDate(const char* date) {
+    char filename[100];
+    snprintf(filename, sizeof(filename), "data/attendance_%s.txt", date);
+    
+    // Clear current attendance list first
+    freeAttendanceList();
+    initAttendanceLog();
+    
+    loadAttendanceFromFile(filename);
+}
+
+void showAttendanceByDate(const char* date) {
+    char filename[100];
+    snprintf(filename, sizeof(filename), "data/attendance_%s.txt", date);
+    
+    FILE* file = fopen(filename, "r");
+    if (!file) {
+        printf("No attendance records found for %s\n", date);
+        return;
+    }
+    
+    printf("\n=== Attendance Records for %s ===\n", date);
+    char line[200];
+    int count = 1;
+    
+    while (fgets(line, sizeof(line), file)) {
+        printf("%d. %s", count++, line);
+    }
+    
+    fclose(file);
+}
+
+char* getCurrentDateString() {
+    static char dateStr[20];
+    time_t now;
+    struct tm *timeinfo;
+    
+    time(&now);
+    timeinfo = localtime(&now);
+    strftime(dateStr, sizeof(dateStr), "%d%b", timeinfo);
+    
+    // Convert to uppercase
+    for(int i = 0; dateStr[i]; i++) {
+        if(dateStr[i] >= 'a' && dateStr[i] <= 'z') {
+            dateStr[i] = dateStr[i] - 'a' + 'A';
+        }
+    }
+    
+    return dateStr;
+}
+
+void createSampleDateFiles() {
+    // Create sample attendance files for demonstration (only if they don't exist)
+    FILE* file;
+    
+    // Sample for 08NOV (yesterday's sample)
+    file = fopen("data/attendance_08NOV.txt", "r");
+    if (!file) {
+        file = fopen("data/attendance_08NOV.txt", "w");
+        if (file) {
+            fprintf(file, "Roll: 101, Name: Pawan Joshi, Time: 2024-11-08 09:30:15, Location: (28.644800, 77.216721), Status: Present\n");
+            fprintf(file, "Roll: 102, Name: Anushka Goel, Time: 2024-11-08 09:32:22, Location: (28.644801, 77.216722), Status: Present\n");
+            fclose(file);
+        }
+    } else {
+        fclose(file);
+    }
+    
+    // Sample for 07NOV (day before yesterday)
+    file = fopen("data/attendance_07NOV.txt", "r");
+    if (!file) {
+        file = fopen("data/attendance_07NOV.txt", "w");
+        if (file) {
+            fprintf(file, "Roll: 103, Name: Jasmine Mahajan, Time: 2024-11-07 09:35:10, Location: (28.644799, 77.216720), Status: Present\n");
+            fprintf(file, "Roll: 104, Name: Aaditya Uniyal, Time: 2024-11-07 09:31:18, Location: (28.644802, 77.216723), Status: Present\n");
+            fclose(file);
+        }
+    } else {
+        fclose(file);
+    }
+    
+    printf("Dynamic attendance system initialized!\n");
+    printf("Today's attendance will be saved to: attendance_%s.txt\n", getCurrentDateString());
 }

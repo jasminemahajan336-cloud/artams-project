@@ -27,5 +27,12 @@ void showAttendance();
 void freeAttendanceList();
 void printAttendanceRecord(const AttendanceRecord* record);
 
+// Date-based functions
+void saveAttendanceByDate(const char* date);
+void loadAttendanceByDate(const char* date);
+void showAttendanceByDate(const char* date);
+char* getCurrentDateString();
+void createSampleDateFiles(); // For demonstration
+int isAlreadyMarkedToday(int roll_no, const char* date); // Check if marked for specific date
 
 #endif
