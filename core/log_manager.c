@@ -299,36 +299,3 @@ char* getCurrentDateString() {
     return dateStr;
 }
 
-void createSampleDateFiles() {
-    // Create sample attendance files for demonstration (only if they don't exist)
-    FILE* file;
-    
-    // Sample for 08NOV (yesterday's sample)
-    file = fopen("data/attendance_08NOV.txt", "r");
-    if (!file) {
-        file = fopen("data/attendance_08NOV.txt", "w");
-        if (file) {
-            fprintf(file, "Roll: 101, Name: Pawan Joshi, Time: 2024-11-08 09:30:15, Location: (28.644800, 77.216721), Status: Present\n");
-            fprintf(file, "Roll: 102, Name: Anushka Goel, Time: 2024-11-08 09:32:22, Location: (28.644801, 77.216722), Status: Present\n");
-            fclose(file);
-        }
-    } else {
-        fclose(file);
-    }
-    
-    // Sample for 07NOV (day before yesterday)
-    file = fopen("data/attendance_07NOV.txt", "r");
-    if (!file) {
-        file = fopen("data/attendance_07NOV.txt", "w");
-        if (file) {
-            fprintf(file, "Roll: 103, Name: Jasmine Mahajan, Time: 2024-11-07 09:35:10, Location: (28.644799, 77.216720), Status: Present\n");
-            fprintf(file, "Roll: 104, Name: Aaditya Uniyal, Time: 2024-11-07 09:31:18, Location: (28.644802, 77.216723), Status: Present\n");
-            fclose(file);
-        }
-    } else {
-        fclose(file);
-    }
-    
-    printf("Dynamic attendance system initialized!\n");
-    printf("Today's attendance will be saved to: attendance_%s.txt\n", getCurrentDateString());
-}

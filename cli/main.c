@@ -12,10 +12,8 @@
 void teacherMenu();
 void studentMenu();
 void mainMenu();
-void viewAttendanceLogMenu();
 void selectDateMenu();
 void viewAttendanceByDate(const char* date);
-void showAvailableDates();
 
 int main() {
     inithashTable();
@@ -25,10 +23,7 @@ int main() {
     loadAttendanceFromFile("data/attendance_log.txt");
     
     loadClassroomLocation();
-    
-    // Create sample date files for demonstration
-    createSampleDateFiles();
-        
+            
     printf("=== ARTAMS - Hamara Attendance Management System ===\n");
 
     while (1) {
@@ -110,7 +105,7 @@ void teacherMenu() {
             waitForUserInput(); 
         }
         else if (choice == 2) {
-            viewAttendanceLogMenu();
+            selectDateMenu();
         } 
         else if (choice == 3) { // Add student
             printf("\nEnter Roll Number: ");
@@ -228,25 +223,6 @@ void studentMenu() {
     printf("Your location: (%.6f, %.6f)\n", lat, lon);
 }
 
-void viewAttendanceLogMenu() {
-    printf("\n--- View Attendance Log Architecture ---\n");
-    printf("\nAttendance Log (.ve folder hai)\n");
-    printf("=========================================\n");
-    printf("  09NOV                               \n");
-    printf("  10NOV                               \n");
-    printf("  11NOV                               \n");
-    printf("                                     \n");
-    printf("=========================================\n");
-    printf("\nOTHER FILES\n");
-    printf("=========================================\n");
-    printf("  attendance_log.txt                  \n");
-    printf("  sessions.txt                        \n");
-    printf("=========================================\n");
-    
-    printf("\nwhen clicked on view attendance log\n");
-    selectDateMenu();
-}
-
 void selectDateMenu() {
     int choice;
     char dateStr[20];
@@ -259,9 +235,7 @@ void selectDateMenu() {
         printf("1. Today's Attendance\n");
         printf("2. Yesterday's Attendance\n");
         printf("3. Enter Custom Date (DDMM format)\n");
-        printf("4. View All Attendance Records\n");
-        printf("5. Show Available Dates\n");
-        printf("6. Return to Teacher Menu\n");
+        printf("4. Return to Teacher Menu\n");
         printf("> ");
         fflush(stdout);
         scanf("%d", &choice);
@@ -309,16 +283,6 @@ void selectDateMenu() {
                 break;
                 
             case 4:
-                printf("\n--- All Attendance Records ---\n");
-                showAttendance();
-                waitForUserInput();
-                break;
-                
-            case 5:
-                showAvailableDates();
-                break;
-                
-            case 6:
                 return; // Exit the loop and return to teacher menu
                 
             default:
@@ -330,10 +294,6 @@ void selectDateMenu() {
 }
 
 void viewAttendanceByDate(const char* date) {
-    printf("\n--- Attendance for %s ---\n", date);
-    printf("DATE >>> FILE NAME\n");
-    printf("via data linked ho - for searching the file of the desired date\n\n");
-    
     // Get current date for comparison
     time_t now;
     struct tm *timeinfo;
@@ -353,10 +313,7 @@ void viewAttendanceByDate(const char* date) {
         printf("Showing today's attendance records (%s):\n", date);
         printf("===================================================\n");
         showAttendance();
-    } else {
-        printf("Searching for attendance records for %s...\n", date);
-        printf("===================================================\n");
-        
+    } else {        
         // Try to load date-specific file
         char filename[100];
         snprintf(filename, sizeof(filename), "data/attendance_%s.txt", date);
@@ -383,46 +340,9 @@ void viewAttendanceByDate(const char* date) {
             printf("Note: Historical attendance data for %s would be stored in:\n", date);
             printf("   %s\n\n", filename);
             
-            printf("Showing current attendance as fallback:\n");
-            printf("===================================================\n");
             showAttendance();
         }
     }
-    
-    waitForUserInput();
-}
-
-void showAvailableDates() {
-    printf("\n--- Available Attendance Dates ---\n");
-    printf("Scanning data directory for attendance files...\n\n");
-    
-    // Get current date
-    char* currentDate = getCurrentDateString();
-    
-    printf("Available dates:\n");
-    printf("=========================================\n");
-    printf("  %s (Today - Dynamic)              \n", currentDate);
-    
-    // Check for existing date files
-    char testDates[][10] = {"07NOV", "08NOV", "09NOV", "10NOV"};
-    int numDates = sizeof(testDates) / sizeof(testDates[0]);
-    
-    for(int i = 0; i < numDates; i++) {
-        char filename[100];
-        snprintf(filename, sizeof(filename), "data/attendance_%s.txt", testDates[i]);
-        FILE* file = fopen(filename, "r");
-        if(file) {
-            printf("  %s (Historical)                   \n", testDates[i]);
-            fclose(file);
-        }
-    }
-    
-    printf("=========================================\n");
-    
-    printf("\nDynamic System:\n");
-    printf("   - Files are created automatically when attendance is marked\n");
-    printf("   - Today's file: attendance_%s.txt\n", currentDate);
-    printf("   - Each day gets its own file\n");
     
     waitForUserInput();
 }

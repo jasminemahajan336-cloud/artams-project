@@ -75,7 +75,7 @@ int studentLogin() {
     fclose(file);
 
     if (!authenticated) {
-        printf("❌ Invalid roll number or password.\n");
+        printf("Invalid roll number or password.\n");
         return 0;
     }
 
