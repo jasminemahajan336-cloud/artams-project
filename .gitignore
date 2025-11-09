@@ -1,0 +1,22 @@
+# Compiled executables
+*.exe
+*.out
+artams
+artams_*
+
+# Test files
+test_date.c
+test_date
+
+# IDE files
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
